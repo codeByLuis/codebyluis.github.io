@@ -1,0 +1,211 @@
+<!DOCTYPE HTML>
+<!--
+	Massively by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Elements Reference - Massively by HTML5 UP</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/googlecode.min.css">
+	    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<link rel="stylesheet" href="assets/css/custom.css" />
+		
+	</head>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper">
+<!-- Header -->
+<header id="header">
+	<a href="index.html" class="logo">Home</a>
+</header>
+<!-- Nav -->
+<nav id="nav">
+	<ul class="links">
+		<li><a href="index">Home</a></li>
+		<li><a href="mystory">My Story</a></li>
+		
+		<li class="active"><a href="sql">SQL-Python</a></li>
+		<li><a href="page_visits">Jupyter Notebook</a></li>
+	</ul>
+	<ul class="icons alt">
+		<li><a href="https://github.com/codeByLuis" target="_blank" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+		<li><a href="https://www.linkedin.com/in/aguilar01" target="_blank" class="icon brands alt fa-linkedin"><span class="label">Linkedin</span></a></li>
+		<li style="margin-top: 8px;"><a href="https://public.tableau.com/app/profile/luis.aguilar.analyst" target="_blank" class="fa fa-tableau"><span class="label"><img width="20" height="20" src="https://img.icons8.com/material-rounded/24/FFFFFF/tableau-software.png" alt="tableau-software"/>Tableau</span></a></li>
+	  </ul>
+</nav>
+				
+<!-- Main -->
+<div id="main">
+	<div id="content">
+		<h2>Code Samples</h2>
+<details open>
+<summary class="acc-header">Creating and Populating Tables</summary>
+<p>
+	SQL Server Management Studio
+</p>
+<pre style="tab-size: 2;">
+	<code class="language-sql">
+	# CREATE EMPLOYEE TABLE:
+	DROP TABLE if exists EmployeesDemographics
+	CREATE TABLE EmployeesDemographics(
+		EmployeeID int,
+		FirstName varchar(50),
+		LastName varchar(50),
+		Age int,
+		Gender varchar(50));
+
+	# INSERT EMPLOYEE RECORDS:
+	INSERT INTO EmployeesDemographics VALUES
+		(1001, 'Jim', 'Halpert', 30, 'Male'),
+		(1002, 'Pam', 'Beasley', 30, 'Female'),
+		(1003, 'Dwight', 'Schrute', 29, 'Male'),
+		(1004, 'Angela', 'Martin', 31, 'Female'),
+		(1005, 'Toby', 'Flanderson', 32, 'Male');
+	</code>
+</pre>
+</details>
+<details>
+<summary id="pythonsql" class="acc-header">Python and SQL - Updating Records</summary>
+<p>
+	In this section I use Python and SQL code with remote connection to MS SQL Server
+	database on localhost using Windows Authentication.  EmployeeID for Dwight Schrute is currently 1003 as displayed on table below, 
+	this will be updated to 1050 using the 'WHERE' statement together with 'AND' and 'LIKE' to identify the row to be updated.
+<br/><br/>Firt 3 Rows from EmployeeDemographics Table:</p>
+<table>
+	<thead>
+		<tr>
+		<th>EmployeeID</th>
+		<th>FirstName</th>
+		<th>LastName</th>
+		<th>Age</th>
+		<th>Gender</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+		<td>1001</td>
+		<td>Jim</td>
+		<td>Halpert</td>
+		<td>30</td>
+		<td>Male</td>
+		</tr>
+		<tr>
+		<td>1002</td>
+		<td>Pam</td>
+		<td>Beasley</td>
+		<td>30</td>
+		<td>Female</td>
+		</tr>
+		<tr>
+		<td>1003</td>
+		<td>Dwight</td>
+		<td>Schrute</td>
+		<td>29</td>
+		<td>Male</td>
+		</tr>
+	</tbody>
+</table>
+<pre style="tab-size: 4;">
+	<code class="language-python">
+	#Establish connection:									
+	conn = pyodbc.connect('\
+		DRIVER={SQL Server};\
+		SERVER=localhost\SQLEXPRESS;\
+		DATABASE=SQLTutorial;\
+		Trusted_Connection=True;')
+
+	#Define cursor object, used to execute SQL queries:
+	cursor = conn.cursor()
+
+	#Update EmployeeID to 1050 where first name = Dwight and last name contains 'rute':
+	cursor.execute('\
+		UPDATE EmployeeDemographics\
+		SET EmployeeID = 1050\
+		WHERE FirstName = \'Dwight\' AND LastName LIKE \'%rute%\''
+	)
+
+	#Commit changes:
+	conn.commit()
+
+	#Check Results where employee last name is Schrute:
+	cursor.execute('\
+		SELECT *\ 
+		FROM EmployeeDemographics\
+		WHERE LastName = \'Schrute\'')
+
+	#Fetch results from query and display in table format:
+	rows = cursor.fetchall()
+	headers = [col[0] for col in cursor.description]
+	table = tabulate.tabulate(rows, headers=headers)
+
+	print(f' Verify EmployeeID updated to 1050 for Dwight Schrute: \n\n  {table}')
+
+	#Close connection to database:
+	conn.close()
+	</code>
+</pre>
+									
+Verify EmployeeID updated to 1050 for Dwight Schrute:<br/><br/>
+<table>
+	<thead>
+		<tr>
+		<th>EmployeeID</th>
+		<th>FirstName</th>
+		<th>LastName</th>
+		<th>Age</th>
+		<th>Gender</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+		<td>1050</td>
+		<td>Dwight</td>
+		<td>Schrute</td>
+		<td>29</td>
+		<td>Male</td>
+		</tr>
+	</tbody>
+</table>
+</details>							
+
+</div>
+</div>
+	<!-- Footer -->
+	<footer id="footer">
+
+		
+			<section>
+				<h3>Social</h3>
+				<ul class="icons alt">
+					<li><a href="https://github.com/codeByLuis" target="_blank" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+					<li><a href="https://www.linkedin.com/in/aguilar01" target="_blank" class="icon brands alt fa-linkedin"><span class="label">Linkedin</span></a></li>
+					<li style="margin-top: 8px;"><a href="https://public.tableau.com/app/profile/luis.aguilar.analyst" target="_blank"" class="fa fa-tableau"><span class="label"><img width="24" height="24" src="https://img.icons8.com/material-rounded/24/tableau-software.png" alt="tableau-software"/>Tableau</span></a></li>
+				  </ul>
+			</section>
+		<!-- Copyright -->
+
+	</footer>
+
+	<div id="copyright">
+		<ul><li>&copy; Luis Aguilar</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
+	</div>
+
+</div>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/jquery.scrollex.min.js"></script>
+	<script src="assets/js/jquery.scrolly.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+	<script>hljs.highlightAll();</script>
+</body>
+</html>
